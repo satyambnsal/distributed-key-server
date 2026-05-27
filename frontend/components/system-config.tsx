@@ -139,10 +139,18 @@ function ServerStatus({ url }: { url: string }) {
     checkStatus()
   }, [url])
 
-  return (
-    <span className={`w-2 h-2 rounded-full ${
-      status === 'checking' ? 'bg-secondary animate-pulse' :
-      status === 'online' ? 'bg-success' : 'bg-error'
-    }`} title={status} />
-  )
+  if (status === 'checking') {
+    return <span className="w-2.5 h-2.5 rounded-full bg-outline animate-pulse" title="Checking..." />
+  }
+
+  if (status === 'online') {
+    return (
+      <span className="relative flex h-2.5 w-2.5" title="Online">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+      </span>
+    )
+  }
+
+  return <span className="w-2.5 h-2.5 rounded-full bg-red-500" title="Offline" />
 }

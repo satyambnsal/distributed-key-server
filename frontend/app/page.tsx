@@ -206,46 +206,6 @@ export default async function Home() {
             </div>
           </section>
 
-          {/* Footer */}
-          <footer className="bg-ink text-on-primary py-section px-xxl w-full border-t border-hairline">
-            <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-xl">
-              <div className="max-w-md">
-                <div className="text-title-sm text-on-primary mb-md tracking-tight font-bold">AwesomeIBE</div>
-                <p className="text-legal text-on-primary/60 mb-md">
-                  Building the standard for identity-based cryptographic protocols. Secure editorial encryption for the modern era.
-                </p>
-                <p className="text-legal text-on-primary/60">
-                  &copy; 2024 AwesomeIBE. Secure Editorial Encryption.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-xl">
-                <div className="flex flex-col gap-xs">
-                  <span className="text-caption text-on-primary mb-xs">Legal</span>
-                  <a className="text-legal text-on-primary/60 hover:text-signature-peach transition-colors" href="#">
-                    Privacy Policy
-                  </a>
-                  <a className="text-legal text-on-primary/60 hover:text-signature-peach transition-colors" href="#">
-                    Terms of Service
-                  </a>
-                  <a className="text-legal text-on-primary/60 hover:text-signature-peach transition-colors" href="#">
-                    Security Whitepaper
-                  </a>
-                </div>
-                <div className="flex flex-col gap-xs">
-                  <span className="text-caption text-on-primary mb-xs">Platform</span>
-                  <a className="text-legal text-on-primary/60 hover:text-signature-peach transition-colors" href="#">
-                    Dashboard
-                  </a>
-                  <a className="text-legal text-on-primary/60 hover:text-signature-peach transition-colors" href="#">
-                    API Docs
-                  </a>
-                  <a className="text-legal text-on-primary/60 hover:text-signature-peach transition-colors" href="#">
-                    Key Management
-                  </a>
-                </div>
-              </div>
-            </div>
-          </footer>
         </>
       )}
     </main>
