@@ -15,3 +15,8 @@ export const ibeConfig = {
     process.env.NEXT_PUBLIC_KEY_SERVER_3 || 'http://127.0.0.1:4103',
   ],
 }
+
+export const APP_URL = "https://distributed-key-server.vercel.app"
+
+// Email configuration
+export const EMAIL_FROM_ADDRESS = "no-reply@ravenhouse.xyz"

@@ -10,6 +10,7 @@
     "generate:types:prod": "export $(cat .env.local | xargs) && bunx supabase gen types typescript --project-id ${SUPABASE_PROJECT_REF} --schema awesomeibe > lib/database.types.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.1054.0",
     "@noble/bls12-381": "^1.4.0",
     "@noble/curves": "^2.2.0",
     "@noble/hashes": "^2.2.0",
