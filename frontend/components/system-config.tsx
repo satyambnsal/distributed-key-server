@@ -40,16 +40,16 @@ export function SystemConfig() {
 
   if (loading) {
     return (
-      <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg animate-pulse">
-        <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+      <div className="p-lg bg-surface-soft border border-hairline rounded-xl animate-pulse">
+        <div className="h-4 bg-surface-container-high rounded w-1/3"></div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-        <p className="text-sm text-red-600">Failed to load system configuration: {error}</p>
+      <div className="p-lg bg-error-container border border-error/20 rounded-xl">
+        <p className="text-body-md text-on-error-container">Failed to load system configuration: {error}</p>
       </div>
     )
   }
@@ -59,38 +59,42 @@ export function SystemConfig() {
   const truncatedKey = `${config.masterPublicKeyHex.slice(0, 32)}...${config.masterPublicKeyHex.slice(-16)}`
 
   return (
-    <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-purple-900">System Configuration</h3>
-        <span className={`text-xs px-2 py-1 rounded-full ${
+    <div className="p-lg bg-surface-soft border border-hairline rounded-xl">
+      <div className="flex items-center justify-between mb-md">
+        <div className="flex items-center gap-sm">
+          <span className="material-symbols-outlined text-secondary">settings</span>
+          <h3 className="text-title-sm text-ink font-medium">System Configuration</h3>
+        </div>
+        <span className={`text-caption px-sm py-xxs rounded-full ${
           config.source === 'server'
-            ? 'bg-green-100 text-green-700'
-            : 'bg-yellow-100 text-yellow-700'
+            ? 'bg-signature-mint/30 text-signature-forest'
+            : 'bg-signature-yellow/30 text-signature-mustard'
         }`}>
           {config.source === 'server' ? 'Live from servers' : 'From environment'}
         </span>
       </div>
 
-      <div className="grid gap-3 text-sm">
+      <div className="grid gap-md text-body-md">
         <div className="flex items-center justify-between">
-          <span className="text-gray-600">Threshold:</span>
-          <span className="font-mono bg-white px-2 py-1 rounded border border-gray-200">
+          <span className="text-secondary">Threshold:</span>
+          <span className="font-mono bg-canvas px-sm py-xxs rounded border border-hairline">
             {config.threshold} of {config.servers.length}
           </span>
         </div>
 
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-gray-600">Master Public Key:</span>
+          <div className="flex items-center justify-between mb-xs">
+            <span className="text-secondary">Master Public Key:</span>
             <button
               onClick={() => copyToClipboard(config.masterPublicKeyHex)}
-              className="text-xs text-purple-600 hover:text-purple-800"
+              className="text-caption text-signature-coral hover:text-signature-coral/80 flex items-center gap-xxs transition-colors"
             >
+              <span className="material-symbols-outlined text-[16px]">content_copy</span>
               Copy
             </button>
           </div>
           <div
-            className="font-mono text-xs bg-white px-2 py-1 rounded border border-gray-200 break-all cursor-pointer hover:bg-gray-50"
+            className="font-mono text-caption bg-canvas px-sm py-xs rounded border border-hairline break-all cursor-pointer hover:bg-surface-container-low transition-colors"
             onClick={() => setExpanded(!expanded)}
             title="Click to expand/collapse"
           >
@@ -99,12 +103,12 @@ export function SystemConfig() {
         </div>
 
         <div>
-          <span className="text-gray-600">Key Servers:</span>
-          <div className="mt-1 space-y-1">
+          <span className="text-secondary">Key Servers:</span>
+          <div className="mt-xs space-y-xs">
             {config.servers.map((server, i) => (
-              <div key={i} className="flex items-center gap-2">
+              <div key={i} className="flex items-center gap-sm">
                 <ServerStatus url={server} />
-                <span className="font-mono text-xs bg-white px-2 py-1 rounded border border-gray-200">
+                <span className="font-mono text-caption bg-canvas px-sm py-xxs rounded border border-hairline">
                   {server}
                 </span>
               </div>
@@ -137,8 +141,8 @@ function ServerStatus({ url }: { url: string }) {
 
   return (
     <span className={`w-2 h-2 rounded-full ${
-      status === 'checking' ? 'bg-gray-300 animate-pulse' :
-      status === 'online' ? 'bg-green-500' : 'bg-red-500'
+      status === 'checking' ? 'bg-secondary animate-pulse' :
+      status === 'online' ? 'bg-success' : 'bg-error'
     }`} title={status} />
   )
 }

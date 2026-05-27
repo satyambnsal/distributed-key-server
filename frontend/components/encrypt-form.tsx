@@ -64,20 +64,23 @@ export function EncryptForm({ user }: EncryptFormProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Encrypt Data</h2>
-        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+    <div className="bg-canvas border border-hairline rounded-xl p-lg">
+      <div className="flex items-center justify-between mb-md">
+        <div className="flex items-center gap-sm">
+          <span className="material-symbols-outlined text-signature-coral">lock</span>
+          <h2 className="text-title-sm text-ink font-medium">Encrypt Data</h2>
+        </div>
+        <span className="text-caption px-sm py-xxs bg-surface-soft text-secondary rounded-full">
           Server-side
         </span>
       </div>
-      <p className="text-sm text-gray-500 mb-4">
+      <p className="text-body-md text-secondary mb-lg">
         Encrypt data for a specific user using Identity-Based Encryption. The message will be encrypted by the key server.
       </p>
 
-      <form onSubmit={handleEncrypt} className="space-y-4">
+      <form onSubmit={handleEncrypt} className="space-y-md">
         <div>
-          <label htmlFor="recipient" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="recipient" className="block text-label-md text-ink mb-xs">
             Recipient Email
           </label>
           <input
@@ -86,13 +89,13 @@ export function EncryptForm({ user }: EncryptFormProps) {
             value={recipientEmail}
             onChange={(e) => setRecipientEmail(e.target.value)}
             placeholder="recipient@example.com"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-md py-sm border border-hairline rounded-lg text-body-md focus:outline-none focus:ring-2 focus:ring-signature-coral focus:border-transparent bg-canvas"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="plaintext" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="plaintext" className="block text-label-md text-ink mb-xs">
             Message to Encrypt
           </label>
           <textarea
@@ -101,7 +104,7 @@ export function EncryptForm({ user }: EncryptFormProps) {
             onChange={(e) => setPlaintext(e.target.value)}
             placeholder="Enter your secret message..."
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-md py-sm border border-hairline rounded-lg text-body-md focus:outline-none focus:ring-2 focus:ring-signature-coral focus:border-transparent bg-canvas resize-none"
             required
           />
         </div>
@@ -109,40 +112,52 @@ export function EncryptForm({ user }: EncryptFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-lg py-sm text-button text-on-primary bg-signature-coral rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-xs"
         >
-          {loading ? 'Encrypting...' : 'Encrypt'}
+          {loading ? (
+            <>
+              <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+              Encrypting...
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined text-[18px]">lock</span>
+              Encrypt
+            </>
+          )}
         </button>
       </form>
 
       {error && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="mt-md p-md bg-error-container border border-error/20 rounded-lg">
+          <p className="text-body-md text-on-error-container">{error}</p>
         </div>
       )}
 
       {sealedData && (
-        <div className="mt-4">
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-700">
+        <div className="mt-md">
+          <div className="flex items-center justify-between mb-xs">
+            <label className="text-label-md text-ink">
               Encrypted Output
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-xs">
               <button
                 onClick={handleCopy}
-                className="px-3 py-1 text-xs text-gray-600 bg-gray-100 rounded hover:bg-gray-200"
+                className="px-sm py-xxs text-caption text-secondary bg-surface-soft rounded hover:bg-surface-container-high transition-colors flex items-center gap-xxs"
               >
+                <span className="material-symbols-outlined text-[16px]">content_copy</span>
                 Copy
               </button>
               <button
                 onClick={handleDownload}
-                className="px-3 py-1 text-xs text-gray-600 bg-gray-100 rounded hover:bg-gray-200"
+                className="px-sm py-xxs text-caption text-secondary bg-surface-soft rounded hover:bg-surface-container-high transition-colors flex items-center gap-xxs"
               >
+                <span className="material-symbols-outlined text-[16px]">download</span>
                 Download
               </button>
             </div>
           </div>
-          <pre className="p-3 bg-gray-50 border border-gray-200 rounded-md text-xs overflow-auto max-h-48">
+          <pre className="p-md bg-surface-soft border border-hairline rounded-lg text-caption font-mono overflow-auto max-h-48">
             {sealedData}
           </pre>
         </div>

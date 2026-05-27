@@ -45,50 +45,46 @@ export function AuthButton({ user }: AuthButtonProps) {
 
   if (user) {
     return (
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">
-            {user.email}
-          </span>
-        </div>
-        <button
-          onClick={handleSignOut}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-        >
-          Sign Out
-        </button>
-      </div>
+      <button
+        onClick={handleSignOut}
+        className="px-lg py-xs text-button rounded-full border border-hairline hover:bg-surface-soft transition-colors"
+      >
+        Sign Out
+      </button>
     )
   }
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="w-full max-w-xs">
-        <form onSubmit={handleEmailSignIn} className="space-y-3">
-          <div>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Sending...' : 'Send Magic Link'}
-          </button>
-        </form>
-        {message && (
-          <p className={`mt-2 text-sm ${message.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
-            {message.text}
-          </p>
-        )}
-      </div>
+    <div className="flex flex-col items-center gap-md">
+      <form onSubmit={handleEmailSignIn} className="flex flex-col sm:flex-row gap-sm">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your email"
+          className="px-lg py-md text-body-md border border-hairline rounded-full focus:outline-none focus:ring-2 focus:ring-signature-coral focus:border-transparent bg-canvas"
+          required
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-ink text-on-primary px-xl py-md rounded-full text-button hover:opacity-90 transition-all flex items-center justify-center gap-xs disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? (
+            'Sending...'
+          ) : (
+            <>
+              Sign in with email
+              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </>
+          )}
+        </button>
+      </form>
+      {message && (
+        <p className={`text-body-md ${message.type === 'success' ? 'text-success' : 'text-error'}`}>
+          {message.text}
+        </p>
+      )}
     </div>
   )
 }

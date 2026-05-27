@@ -70,15 +70,18 @@ export function DecryptForm({ user }: DecryptFormProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-semibold mb-4">Decrypt Data</h2>
-      <p className="text-sm text-gray-500 mb-4">
+    <div className="bg-canvas border border-hairline rounded-xl p-lg">
+      <div className="flex items-center gap-sm mb-md">
+        <span className="material-symbols-outlined text-signature-forest">lock_open</span>
+        <h2 className="text-title-sm text-ink font-medium">Decrypt Data</h2>
+      </div>
+      <p className="text-body-md text-secondary mb-lg">
         Decrypt data that was encrypted for your identity ({user.email}).
       </p>
 
-      <form onSubmit={handleDecrypt} className="space-y-4">
+      <form onSubmit={handleDecrypt} className="space-y-md">
         <div>
-          <label htmlFor="sealed" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="sealed" className="block text-label-md text-ink mb-xs">
             Sealed Data (JSON)
           </label>
           <textarea
@@ -87,60 +90,63 @@ export function DecryptForm({ user }: DecryptFormProps) {
             onChange={(e) => setSealedInput(e.target.value)}
             placeholder='{"version":1,"key_id":"user:...","threshold":2,...}'
             rows={6}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+            className="w-full px-md py-sm border border-hairline rounded-lg text-body-md font-mono focus:outline-none focus:ring-2 focus:ring-signature-forest focus:border-transparent bg-canvas resize-none"
             required
           />
         </div>
 
-        <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-            Upload .sealed.json
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-          </label>
-        </div>
+        <label className="flex items-center gap-sm px-md py-sm text-body-md text-secondary bg-surface-soft rounded-lg cursor-pointer hover:bg-surface-container-high transition-colors w-fit">
+          <span className="material-symbols-outlined text-[20px]">upload_file</span>
+          Upload .sealed.json
+          <input
+            type="file"
+            accept=".json"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+        </label>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-lg py-sm text-button text-on-primary bg-signature-forest rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-xs"
         >
-          {loading ? 'Decrypting...' : 'Decrypt'}
+          {loading ? (
+            <>
+              <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+              Decrypting...
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined text-[18px]">lock_open</span>
+              Decrypt
+            </>
+          )}
         </button>
       </form>
 
       {status && (
-        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-          <p className="text-sm text-blue-600 flex items-center gap-2">
-            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
+        <div className="mt-md p-md bg-surface-soft border border-hairline rounded-lg">
+          <p className="text-body-md text-secondary flex items-center gap-sm">
+            <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
             {status}
           </p>
         </div>
       )}
 
       {error && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="mt-md p-md bg-error-container border border-error/20 rounded-lg">
+          <p className="text-body-md text-on-error-container">{error}</p>
         </div>
       )}
 
       {decryptedText && (
-        <div className="mt-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="mt-md">
+          <label className="block text-label-md text-ink mb-xs">
             Decrypted Message
           </label>
-          <div className="p-4 bg-green-50 border border-green-200 rounded-md">
-            <p className="text-gray-800 whitespace-pre-wrap">{decryptedText}</p>
+          <div className="p-md bg-signature-mint/20 border border-signature-mint/40 rounded-lg">
+            <p className="text-body-md text-ink whitespace-pre-wrap">{decryptedText}</p>
           </div>
         </div>
       )}
