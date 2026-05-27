@@ -1,0 +1,9 @@
+nohup: ignoring input
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Finished `release` profile [optimized] target(s) in 0.57s
+     Running `target/release/distributed-key-server-poc serve --config configs/server-1.yaml --public-config configs/public.yaml`
+[2m2026-05-27T13:24:20.238384Z[0m [32m INFO[0m [2mdistributed_key_server_poc[0m[2m:[0m loaded public config from configs/public.yaml
+[2m2026-05-27T13:24:20.238481Z[0m [32m INFO[0m [2mdistributed_key_server_poc[0m[2m:[0m party 1 listening on http://0.0.0.0:3022

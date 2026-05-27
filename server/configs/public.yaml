@@ -1,6 +1,6 @@
 threshold: 2
 master_public_key_hex: b17aeee9be128e2506704201ad9d6e210e06bc8970564eab88e2bff9ee87098ff7942dc354ba66ab2f2dc3bca8eb9eec1979ba07ac17f1aa28a1dafdc80972f66d887e813e134c5cf308ce31728db382d0a838c929aca4171ad740589ffae6a1
 servers:
-- http://127.0.0.1:4101
-- http://127.0.0.1:4102
-- http://127.0.0.1:4103
+- http://3.213.0.115:3021
+- http://3.213.0.115:3022
+- http://3.213.0.115:3023

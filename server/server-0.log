@@ -1,0 +1,10 @@
+nohup: ignoring input
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on artifact directory
+    Finished `release` profile [optimized] target(s) in 0.66s
+     Running `target/release/distributed-key-server-poc serve --config configs/server-0.yaml --public-config configs/public.yaml`
+[2m2026-05-27T13:24:20.326595Z[0m [32m INFO[0m [2mdistributed_key_server_poc[0m[2m:[0m loaded public config from configs/public.yaml
+[2m2026-05-27T13:24:20.326713Z[0m [32m INFO[0m [2mdistributed_key_server_poc[0m[2m:[0m party 0 listening on http://0.0.0.0:3021
+[2m2026-05-27T13:24:34.138697Z[0m [32m INFO[0m [2mdistributed_key_server_poc[0m[2m:[0m Encrypted 5 bytes for key_id=user:satyambnsal@gmail.com

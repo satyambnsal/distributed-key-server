@@ -383,3 +383,16 @@ For production deployments, consider:
 5. **Configure automatic backups** of the config files (especially server private keys)
 6. **Use AWS Secrets Manager** to store sensitive configuration
 7. **Enable VPC** for network isolation between servers and clients
+
+
+lsof -i :PORT
+
+
+VM Static IP
+3.213.0.115
+
+
+Kill processes
+```
+fuser -k 3021/tcp 3022/tcp 3023/tcp
+```

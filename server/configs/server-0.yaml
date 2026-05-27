@@ -1,4 +1,4 @@
 party_id: 0
 threshold: 2
-listen_addr: 127.0.0.1:4101
+listen_addr: 0.0.0.0:3021
 master_share_hex: 370d98a52696e60785852a9fc99c91f130807563cf9d50bbfb16d5a107545927
