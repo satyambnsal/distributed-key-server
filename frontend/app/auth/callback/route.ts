@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
   const supabase = await createClient()
 
-  // Handle OAuth callback (GitHub, etc.)
+  // Handle OAuth callback
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
