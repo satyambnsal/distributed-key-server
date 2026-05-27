@@ -138,7 +138,7 @@ async function aesGcmEncrypt(
     {
       name: 'AES-GCM',
       iv: AES_GCM_IV,
-      additionalData: aad,
+      additionalData: new Uint8Array(aad),
     },
     cryptoKey,
     plaintext
