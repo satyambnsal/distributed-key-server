@@ -6,15 +6,15 @@ import { SystemConfig } from '@/components/system-config'
 
 export default async function Home() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   return (
     <main className="min-h-screen bg-canvas">
       {/* Navigation Bar */}
       <nav className="flex justify-between items-center h-20 px-xxl w-full sticky top-0 z-50 bg-canvas/80 backdrop-blur-md border-b border-hairline">
-        <div className="text-display-md font-bold text-ink tracking-tight">
-          AwesomeIBE
-        </div>
+        <div className="text-display-md font-bold text-ink tracking-tight">AwesomeIBE</div>
         {user ? (
           <div className="flex items-center gap-md">
             <span className="text-body-md text-secondary hidden md:block">{user.email}</span>
@@ -40,7 +40,8 @@ export default async function Home() {
               user:{user.email}
             </code>
             <p className="text-body-md text-secondary mt-sm">
-              Others can encrypt data for you using this identity. You can decrypt anything encrypted for this identity.
+              Others can encrypt data for you using this identity. You can decrypt anything
+              encrypted for this identity.
             </p>
           </div>
 
@@ -64,7 +65,8 @@ export default async function Home() {
                 <div>
                   <h4 className="text-title-sm text-ink mb-xs">Encrypt Locally</h4>
                   <p className="text-body-md text-secondary">
-                    Encryption happens in your browser using the recipient&apos;s email as their identity. No server sees your plaintext.
+                    Encryption happens in your browser using the recipient&apos;s email as their
+                    identity. No server sees your plaintext.
                   </p>
                 </div>
               </div>
@@ -73,7 +75,8 @@ export default async function Home() {
                 <div>
                   <h4 className="text-title-sm text-ink mb-xs">Distributed Keys</h4>
                   <p className="text-body-md text-secondary">
-                    Decryption keys are split across 3 servers. At least 2 must cooperate to decrypt (threshold = 2).
+                    Decryption keys are split across 3 servers. At least 2 must cooperate to decrypt
+                    (threshold = 2).
                   </p>
                 </div>
               </div>
@@ -82,7 +85,8 @@ export default async function Home() {
                 <div>
                   <h4 className="text-title-sm text-ink mb-xs">Identity Verified</h4>
                   <p className="text-body-md text-secondary">
-                    Servers verify your identity via email before releasing key shares. Only you can decrypt your messages.
+                    Servers verify your identity via email before releasing key shares. Only you can
+                    decrypt your messages.
                   </p>
                 </div>
               </div>
@@ -100,8 +104,9 @@ export default async function Home() {
                   Identity-Based Encryption
                 </h1>
                 <p className="text-title-md text-secondary mb-xl leading-relaxed">
-                  Encrypt data for anyone using just their email address. No pre-shared keys, no certificates, no complexity.
-                  AwesomeIBE brings editorial-grade security to modern workflows.
+                  Encrypt data for anyone using just their email address. No pre-shared keys, no
+                  certificates, no complexity. AwesomeIBE brings editorial-grade security to modern
+                  workflows.
                 </p>
                 <div className="flex flex-wrap gap-md">
                   <AuthButton user={null} />
@@ -112,8 +117,12 @@ export default async function Home() {
                 <div className="absolute inset-0 bg-gradient-to-br from-signature-coral/10 via-transparent to-signature-forest/10" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <span className="material-symbols-outlined text-[120px] text-signature-coral/20">lock</span>
-                    <p className="text-title-md text-secondary mt-md">Secure. Simple. Identity-Based.</p>
+                    <span className="material-symbols-outlined text-[120px] text-signature-coral/20">
+                      lock
+                    </span>
+                    <p className="text-title-md text-secondary mt-md">
+                      Secure. Simple. Identity-Based.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -124,8 +133,12 @@ export default async function Home() {
           <section className="py-section bg-surface-soft border-y border-hairline">
             <div className="max-w-[1440px] mx-auto px-xxl">
               <div className="mb-xl">
-                <span className="text-label-md text-signature-coral mb-xs block">Architectural Advantage</span>
-                <h2 className="text-display-md text-ink tracking-tight">Security without the friction.</h2>
+                <span className="text-label-md text-signature-coral mb-xs block">
+                  Architectural Advantage
+                </span>
+                <h2 className="text-display-md text-ink tracking-tight">
+                  Security without the friction.
+                </h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-xl">
                 {/* Card 1: Coral */}
@@ -135,8 +148,9 @@ export default async function Home() {
                     <h3 className="text-display-md mb-md leading-none">No Key Exchange</h3>
                   </div>
                   <p className="text-body-md opacity-90 leading-relaxed">
-                    Eliminate the &quot;trust-on-first-use&quot; problem. Encrypt sensitive assets using a public identifier like an email
-                    address before the recipient even registers.
+                    Eliminate the &quot;trust-on-first-use&quot; problem. Encrypt sensitive assets
+                    using a public identifier like an email address before the recipient even
+                    registers.
                   </p>
                 </div>
                 {/* Card 2: Forest */}
@@ -146,19 +160,21 @@ export default async function Home() {
                     <h3 className="text-display-md mb-md leading-none">Threshold Security</h3>
                   </div>
                   <p className="text-body-md opacity-90 leading-relaxed">
-                    Private keys are generated through a distributed network of nodes. No single entity ever possesses the full
-                    master key, ensuring total sovereignty.
+                    Private keys are generated through a distributed network of nodes. No single
+                    entity ever possesses the full master key, ensuring total sovereignty.
                   </p>
                 </div>
                 {/* Card 3: White Canvas */}
                 <div className="bg-canvas border border-hairline p-xxl rounded-xl flex flex-col justify-between min-h-[380px] hover:scale-[1.01] transition-transform">
                   <div>
-                    <span className="material-symbols-outlined text-[48px] mb-md text-signature-coral">privacy_tip</span>
+                    <span className="material-symbols-outlined text-[48px] mb-md text-signature-coral">
+                      privacy_tip
+                    </span>
                     <h3 className="text-display-md mb-md leading-none text-ink">Privacy First</h3>
                   </div>
                   <p className="text-body-md text-secondary leading-relaxed">
-                    Identity-based encryption ensures that even metadata is shielded. Your internal workflows remain invisible
-                    to external observers and service providers.
+                    Identity-based encryption ensures that even metadata is shielded. Your internal
+                    workflows remain invisible to external observers and service providers.
                   </p>
                 </div>
               </div>
@@ -172,7 +188,7 @@ export default async function Home() {
                 Technical Overview
               </span>
               <h2 className="text-display-lg text-ink mb-xl leading-tight max-w-2xl">
-                The future of encryption is identity-driven.
+                The future of encryption is identity driven.
               </h2>
               <div className="grid md:grid-cols-3 gap-xl">
                 <div className="flex gap-md">
@@ -180,7 +196,8 @@ export default async function Home() {
                   <div>
                     <h4 className="text-title-sm text-ink mb-xs">Identifier as Public Key</h4>
                     <p className="text-body-md text-secondary">
-                      Any string can be a public key. We use verified email addresses to map identities to cryptographic material instantly.
+                      Any string can be a public key. We use verified email addresses to map
+                      identities to cryptographic material instantly.
                     </p>
                   </div>
                 </div>
@@ -189,7 +206,8 @@ export default async function Home() {
                   <div>
                     <h4 className="text-title-sm text-ink mb-xs">Stateless Decryption</h4>
                     <p className="text-body-md text-secondary">
-                      Recipients don&apos;t need to be online or have previously generated keys to receive encrypted data.
+                      Recipients don&apos;t need to be online or have previously generated keys to
+                      receive encrypted data.
                     </p>
                   </div>
                 </div>
@@ -198,14 +216,14 @@ export default async function Home() {
                   <div>
                     <h4 className="text-title-sm text-ink mb-xs">Automated Revocation</h4>
                     <p className="text-body-md text-secondary">
-                      Key life-cycles are managed through identity TTLs, making traditional revocation lists obsolete.
+                      Key life-cycles are managed through identity TTLs, making traditional
+                      revocation lists obsolete.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
           </section>
-
         </>
       )}
     </main>
