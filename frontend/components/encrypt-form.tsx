@@ -119,12 +119,10 @@ export function EncryptForm({ user }: EncryptFormProps) {
           <span className="material-symbols-outlined text-signature-coral">lock</span>
           <h2 className="text-title-sm text-ink font-medium">Encrypt Data</h2>
         </div>
-        <span className="text-caption px-sm py-xxs bg-surface-soft text-secondary rounded-full">
-          Server-side
-        </span>
       </div>
       <p className="text-body-md text-secondary mb-lg">
-        Encrypt data for a specific user using Identity-Based Encryption. The message will be encrypted by the key server.
+        Encrypt data for a specific user using Identity-Based Encryption. The message will be
+        encrypted by the key server.
       </p>
 
       <form onSubmit={handleEncrypt} className="space-y-md">
@@ -166,7 +164,9 @@ export function EncryptForm({ user }: EncryptFormProps) {
           >
             {loading && !sendingEmail ? (
               <>
-                <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                <span className="material-symbols-outlined animate-spin text-[18px]">
+                  progress_activity
+                </span>
                 Encrypting...
               </>
             ) : (
@@ -184,12 +184,16 @@ export function EncryptForm({ user }: EncryptFormProps) {
           >
             {sendingEmail ? (
               <>
-                <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                <span className="material-symbols-outlined animate-spin text-[18px]">
+                  progress_activity
+                </span>
                 Sending...
               </>
             ) : loading ? (
               <>
-                <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                <span className="material-symbols-outlined animate-spin text-[18px]">
+                  progress_activity
+                </span>
                 Encrypting...
               </>
             ) : (
@@ -211,7 +215,9 @@ export function EncryptForm({ user }: EncryptFormProps) {
       {emailSent && (
         <div className="mt-md p-md bg-green-50 border border-green-200 rounded-lg">
           <div className="flex items-center gap-sm">
-            <span className="material-symbols-outlined text-green-600 text-[20px]">check_circle</span>
+            <span className="material-symbols-outlined text-green-600 text-[20px]">
+              check_circle
+            </span>
             <p className="text-body-md text-green-800">
               Encrypted message sent to <strong>{recipientEmail}</strong>
             </p>
@@ -222,9 +228,7 @@ export function EncryptForm({ user }: EncryptFormProps) {
       {sealedData && (
         <div className="mt-md">
           <div className="flex items-center justify-between mb-xs">
-            <label className="text-label-md text-ink">
-              Encrypted Output
-            </label>
+            <label className="text-label-md text-ink">Encrypted Output</label>
             <div className="flex gap-xs">
               <button
                 onClick={handleCopy}
