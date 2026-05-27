@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase-server'
 import { AuthButton } from '@/components/auth-button'
 import { EncryptForm } from '@/components/encrypt-form'
 import { DecryptForm } from '@/components/decrypt-form'
+import { SystemConfig } from '@/components/system-config'
 
 export default async function Home() {
   const supabase = await createClient()
@@ -32,7 +33,7 @@ export default async function Home() {
         {user ? (
           <>
             {/* User Info Banner */}
-            <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
                 <span className="font-medium">Your identity:</span>{' '}
                 <code className="px-2 py-1 bg-blue-100 rounded">user:{user.email}</code>
@@ -40,6 +41,11 @@ export default async function Home() {
               <p className="text-xs text-blue-600 mt-1">
                 Others can encrypt data for you using this identity. You can decrypt anything encrypted for this identity.
               </p>
+            </div>
+
+            {/* System Configuration */}
+            <div className="mb-8">
+              <SystemConfig />
             </div>
 
             {/* Encrypt/Decrypt Grid */}
@@ -71,7 +77,7 @@ export default async function Home() {
                     <span className="text-blue-600 font-bold">3</span>
                   </div>
                   <h4 className="font-medium text-gray-900 mb-1">Identity Verified</h4>
-                  <p>Servers verify your GitHub identity before releasing key shares. Only you can decrypt your messages.</p>
+                  <p>Servers verify your identity (via GitHub or email) before releasing key shares. Only you can decrypt your messages.</p>
                 </div>
               </div>
             </div>
