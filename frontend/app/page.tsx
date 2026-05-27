@@ -226,6 +226,20 @@ export default async function Home() {
           </section>
         </>
       )}
+
+      {/* Footer */}
+      <footer className="border-t border-hairline py-lg px-xxl">
+        <div className="max-w-[1440px] mx-auto flex justify-center">
+          <a
+            href="https://hackmd.io/@satyambnsal/HJc5NtEgfx"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-body-md text-secondary hover:text-ink transition-colors"
+          >
+            Architecture Documentation
+          </a>
+        </div>
+      </footer>
     </main>
   )
 }
