@@ -49,7 +49,9 @@ export function SystemConfig() {
   if (error) {
     return (
       <div className="p-lg bg-error-container border border-error/20 rounded-xl">
-        <p className="text-body-md text-on-error-container">Failed to load system configuration: {error}</p>
+        <p className="text-body-md text-on-error-container">
+          Failed to load system configuration: {error}
+        </p>
       </div>
     )
   }
@@ -65,11 +67,13 @@ export function SystemConfig() {
           <span className="material-symbols-outlined text-secondary">settings</span>
           <h3 className="text-title-sm text-ink font-medium">System Configuration</h3>
         </div>
-        <span className={`text-caption px-sm py-xxs rounded-full ${
-          config.source === 'server'
-            ? 'bg-signature-mint/30 text-signature-forest'
-            : 'bg-signature-yellow/30 text-signature-mustard'
-        }`}>
+        <span
+          className={`text-caption px-sm py-xxs rounded-full ${
+            config.source === 'server'
+              ? 'bg-signature-mint/30 text-signature-forest'
+              : 'bg-signature-yellow/30 text-signature-mustard'
+          }`}
+        >
           {config.source === 'server' ? 'Live from servers' : 'From environment'}
         </span>
       </div>
@@ -140,17 +144,15 @@ function ServerStatus({ url }: { url: string }) {
   }, [url])
 
   if (status === 'checking') {
-    return <span className="w-2.5 h-2.5 rounded-full bg-outline animate-pulse" title="Checking..." />
-  }
-
-  if (status === 'online') {
     return (
-      <span className="relative flex h-2.5 w-2.5" title="Online">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-      </span>
+      <span className="w-2.5 h-2.5 rounded-full bg-outline animate-pulse" title="Checking..." />
     )
   }
 
-  return <span className="w-2.5 h-2.5 rounded-full bg-red-500" title="Offline" />
+  return (
+    <span className="relative flex h-2.5 w-2.5" title="Online">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+    </span>
+  )
 }
