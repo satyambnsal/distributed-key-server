@@ -14,7 +14,7 @@ export function DecryptForm({ user }: DecryptFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [status, setStatus] = useState<string | null>(null)
 
-  const handleDecrypt = async (e: React.FormEvent) => {
+  const handleDecrypt = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     setError(null)

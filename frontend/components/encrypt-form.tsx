@@ -1,16 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { User } from '@supabase/supabase-js'
-import { encrypt } from '@/lib/ibe'
 
 interface EncryptFormProps {
   user: User
-}
-
-interface Config {
-  threshold: number
-  masterPublicKeyHex: string
 }
 
 export function EncryptForm({ user }: EncryptFormProps) {
@@ -19,62 +13,30 @@ export function EncryptForm({ user }: EncryptFormProps) {
   const [sealedData, setSealedData] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [config, setConfig] = useState<Config | null>(null)
 
-  // Fetch config on mount
-  useEffect(() => {
-    async function fetchConfig() {
-      try {
-        const response = await fetch('/api/config')
-        if (response.ok) {
-          const data = await response.json()
-          setConfig({
-            threshold: data.threshold,
-            masterPublicKeyHex: data.masterPublicKeyHex,
-          })
-        }
-      } catch {
-        // Config will be fetched again on encrypt if needed
-      }
-    }
-    fetchConfig()
-  }, [])
-
-  const handleEncrypt = async (e: React.FormEvent) => {
+  const handleEncrypt = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
     setSealedData(null)
 
     try {
-      // Ensure we have the config
-      let currentConfig = config
-      if (!currentConfig) {
-        const response = await fetch('/api/config')
-        if (!response.ok) {
-          throw new Error('Failed to fetch encryption configuration')
-        }
-        const data = await response.json()
-        currentConfig = {
-          threshold: data.threshold,
-          masterPublicKeyHex: data.masterPublicKeyHex,
-        }
-        setConfig(currentConfig)
+      // Call server-side encryption API
+      const response = await fetch('/api/encrypt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plaintext,
+          recipientEmail,
+        }),
+      })
+
+      if (!response.ok) {
+        const err = await response.json()
+        throw new Error(err.error || 'Encryption failed')
       }
 
-      if (!currentConfig.masterPublicKeyHex) {
-        throw new Error('Master public key not available')
-      }
-
-      // Encrypt locally using IBE
-      const keyId = `user:${recipientEmail}`
-      const sealed = await encrypt(
-        plaintext,
-        keyId,
-        currentConfig.masterPublicKeyHex,
-        currentConfig.threshold
-      )
-
+      const { sealed } = await response.json()
       setSealedData(JSON.stringify(sealed, null, 2))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
@@ -105,12 +67,12 @@ export function EncryptForm({ user }: EncryptFormProps) {
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">Encrypt Data</h2>
-        <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
-          Client-side
+        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+          Server-side
         </span>
       </div>
       <p className="text-sm text-gray-500 mb-4">
-        Encrypt data for a specific user. Encryption happens entirely in your browser - your plaintext never leaves your device.
+        Encrypt data for a specific user using Identity-Based Encryption. The message will be encrypted by the key server.
       </p>
 
       <form onSubmit={handleEncrypt} className="space-y-4">

@@ -15,34 +15,30 @@ export async function POST(request: Request) {
       )
     }
 
-    const { sealed } = await request.json()
+    const { plaintext, recipientEmail } = await request.json()
 
-    if (!sealed) {
+    if (!plaintext || !recipientEmail) {
       return NextResponse.json(
-        { error: 'sealed data is required' },
+        { error: 'plaintext and recipientEmail are required' },
         { status: 400 }
       )
     }
 
-    // Verify the key_id matches the authenticated user
-    const expectedKeyId = `user:${user.email}`
-    if (sealed.key_id !== expectedKeyId) {
-      return NextResponse.json(
-        { error: `Access denied. This data was encrypted for ${sealed.key_id}, but you are ${expectedKeyId}` },
-        { status: 403 }
-      )
-    }
+    // Construct the key_id for IBE (user:email format)
+    const keyId = `user:${recipientEmail}`
 
-    // Call the first available key server's decrypt endpoint
-    // The server will coordinate with other servers to get threshold shares
-    const decryptServer = ibeConfig.servers[0]
+    // Call the key server's encrypt endpoint
+    const encryptServer = ibeConfig.servers[0]
 
-    const response = await fetch(`${decryptServer}/decrypt`, {
+    const response = await fetch(`${encryptServer}/encrypt`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ sealed }),
+      body: JSON.stringify({
+        plaintext,
+        key_id: keyId,
+      }),
     })
 
     if (!response.ok) {
@@ -56,18 +52,18 @@ export async function POST(request: Request) {
       }
 
       return NextResponse.json(
-        { error: errorText || 'Decryption failed' },
+        { error: errorText || 'Encryption failed' },
         { status: response.status }
       )
     }
 
-    const { plaintext } = await response.json()
+    const { sealed } = await response.json()
 
-    return NextResponse.json({ plaintext })
+    return NextResponse.json({ sealed })
   } catch (error) {
-    console.error('Decryption error:', error)
+    console.error('Encryption error:', error)
 
-    const errorMessage = error instanceof Error ? error.message : 'Decryption failed'
+    const errorMessage = error instanceof Error ? error.message : 'Encryption failed'
 
     if (errorMessage.includes('ECONNREFUSED') || errorMessage.includes('fetch failed')) {
       return NextResponse.json(

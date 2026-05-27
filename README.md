@@ -51,9 +51,9 @@ cargo run -- generate-configs \
 Start three servers in separate terminals:
 
 ```bash
-cargo run -- serve --config configs/server-0.yaml
-cargo run -- serve --config configs/server-1.yaml
-cargo run -- serve --config configs/server-2.yaml
+cargo run -- serve --config configs/server-0.yaml --public-config configs/public.yaml
+cargo run -- serve --config configs/server-1.yaml --public-config configs/public.yaml
+cargo run -- serve --config configs/server-2.yaml --public-config configs/public.yaml
 ```
 
 Request and aggregate a key:

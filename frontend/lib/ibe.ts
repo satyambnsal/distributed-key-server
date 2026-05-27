@@ -113,6 +113,11 @@ function bytesToHex(bytes: Uint8Array): string {
     .join('')
 }
 
+// Fixed IV matching Rust implementation (must match crypto/src/dem.rs)
+const AES_GCM_IV = new Uint8Array([
+  138, 55, 153, 253, 198, 46, 121, 219, 160, 128, 89, 7, 214, 156, 148, 220
+])
+
 /**
  * AES-256-GCM encryption (using Web Crypto API)
  */
@@ -123,19 +128,16 @@ async function aesGcmEncrypt(
 ): Promise<Uint8Array> {
   const cryptoKey = await crypto.subtle.importKey(
     'raw',
-    key,
+    new Uint8Array(key),
     { name: 'AES-GCM' },
     false,
     ['encrypt']
   )
 
-  // Use a fixed IV of zeros (safe because key is never reused)
-  const iv = new Uint8Array(12)
-
   const ciphertext = await crypto.subtle.encrypt(
     {
       name: 'AES-GCM',
-      iv,
+      iv: AES_GCM_IV,
       additionalData: aad,
     },
     cryptoKey,

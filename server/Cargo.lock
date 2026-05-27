@@ -880,6 +880,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
+ "base64",
  "clap",
  "crypto",
  "fastcrypto",
@@ -891,6 +892,7 @@ dependencies = [
  "serde_json",
  "serde_yaml",
  "tokio",
+ "tower-http",
  "tracing",
  "tracing-subscriber",
 ]

@@ -4,6 +4,7 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use tower_http::cors::{Any, CorsLayer};
 use clap::{Parser, Subcommand};
 use crypto::{
     dem::Aes256Gcm,
@@ -55,6 +56,9 @@ enum Command {
     Serve {
         #[arg(long)]
         config: PathBuf,
+        /// Optional public config to serve at /config endpoint
+        #[arg(long)]
+        public_config: Option<PathBuf>,
     },
     /// Request a key from several servers and aggregate threshold shares.
     Request {
@@ -109,6 +113,7 @@ struct AppState {
     config: ServerConfig,
     master_share: MasterKey,
     partial_public_key: PublicKey,
+    public_config: Option<PublicConfig>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -132,7 +137,7 @@ struct FetchKeyResponse {
     encrypted_key_share: EncryptedKeyShare,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 struct SealedFile {
     version: u8,
     key_id: String,
@@ -147,6 +152,27 @@ struct AggregatedKey {
     user_secret_key: UserSecretKey,
     recovered_public_key: PublicKey,
     shares: usize,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct DecryptRequest {
+    sealed: SealedFile,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct DecryptResponse {
+    plaintext: String,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct EncryptRequest {
+    plaintext: String,
+    key_id: String,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct EncryptResponse {
+    sealed: SealedFile,
 }
 
 #[tokio::main]
@@ -166,7 +192,7 @@ async fn main() -> Result<()> {
             base_port,
             out_dir,
         } => generate_configs(threshold, parties, &host, base_port, out_dir),
-        Command::Serve { config } => serve(config).await,
+        Command::Serve { config, public_config } => serve(config, public_config).await,
         Command::Request {
             key_id,
             servers,
@@ -246,7 +272,7 @@ fn generate_configs(
     Ok(())
 }
 
-async fn serve(config_path: PathBuf) -> Result<()> {
+async fn serve(config_path: PathBuf, public_config_path: Option<PathBuf>) -> Result<()> {
     let config: ServerConfig = serde_yaml::from_reader(
         std::fs::File::open(&config_path)
             .with_context(|| format!("failed to open {}", config_path.display()))?,
@@ -256,15 +282,38 @@ async fn serve(config_path: PathBuf) -> Result<()> {
     let listen_addr = config.listen_addr;
     let party_id = config.party_id;
 
+    // Load public config if provided
+    let public_config = if let Some(path) = public_config_path {
+        let pc: PublicConfig = serde_yaml::from_reader(
+            std::fs::File::open(&path)
+                .with_context(|| format!("failed to open {}", path.display()))?,
+        )?;
+        info!("loaded public config from {}", path.display());
+        Some(pc)
+    } else {
+        None
+    };
+
     let state = Arc::new(AppState {
         config,
         master_share,
         partial_public_key,
+        public_config,
     });
+
+    // CORS layer to allow browser access
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods(Any)
+        .allow_headers(Any);
 
     let app = Router::new()
         .route("/service", get(handle_service))
         .route("/fetch_key", post(handle_fetch_key))
+        .route("/config", get(handle_config))
+        .route("/decrypt", post(handle_decrypt))
+        .route("/encrypt", post(handle_encrypt))
+        .layer(cors)
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind(listen_addr).await?;
@@ -279,6 +328,18 @@ async fn handle_service(State(state): State<Arc<AppState>>) -> Json<ServiceRespo
         threshold: state.config.threshold,
         partial_public_key: state.partial_public_key,
     })
+}
+
+async fn handle_config(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<PublicConfig>, (axum::http::StatusCode, String)> {
+    match &state.public_config {
+        Some(config) => Ok(Json(config.clone())),
+        None => Err((
+            axum::http::StatusCode::NOT_FOUND,
+            "Public config not available on this server".to_string(),
+        )),
+    }
 }
 
 async fn handle_fetch_key(
@@ -298,6 +359,184 @@ async fn handle_fetch_key(
         key_id: request.key_id,
         encrypted_key_share,
     }))
+}
+
+async fn handle_decrypt(
+    State(state): State<Arc<AppState>>,
+    Json(request): Json<DecryptRequest>,
+) -> Result<Json<DecryptResponse>, (axum::http::StatusCode, String)> {
+    let sealed = request.sealed;
+
+    // Validate sealed file version
+    if sealed.version != 1 {
+        return Err((
+            axum::http::StatusCode::BAD_REQUEST,
+            format!("unsupported sealed file version {}", sealed.version),
+        ));
+    }
+
+    // Get server list from public config
+    let public_config = state.public_config.as_ref().ok_or_else(|| {
+        (
+            axum::http::StatusCode::SERVICE_UNAVAILABLE,
+            "Server not configured with public config; cannot perform decryption".to_string(),
+        )
+    })?;
+
+    // Fetch aggregated key from threshold servers
+    let aggregated = fetch_aggregated_key(&sealed.key_id, public_config.servers.clone(), Some(sealed.threshold))
+        .await
+        .map_err(|e| {
+            (
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                format!("failed to fetch aggregated key: {e}"),
+            )
+        })?;
+
+    // Verify recovered public key matches expected
+    let expected_public_key = decode_g2(&sealed.master_public_key_hex).map_err(|e| {
+        (
+            axum::http::StatusCode::BAD_REQUEST,
+            format!("invalid master_public_key_hex: {e}"),
+        )
+    })?;
+
+    if aggregated.recovered_public_key != expected_public_key {
+        return Err((
+            axum::http::StatusCode::BAD_REQUEST,
+            "server shares recovered a different master public key than the sealed file expects".to_string(),
+        ));
+    }
+
+    // Decode sealed data components
+    let nonce = decode_g2(&sealed.nonce_hex).map_err(|e| {
+        (
+            axum::http::StatusCode::BAD_REQUEST,
+            format!("invalid nonce_hex: {e}"),
+        )
+    })?;
+
+    let encrypted_data_key = decode_hex_array::<KEY_SIZE>(&sealed.encrypted_data_key_hex).map_err(|e| {
+        (
+            axum::http::StatusCode::BAD_REQUEST,
+            format!("invalid encrypted_data_key_hex: {e}"),
+        )
+    })?;
+
+    let ciphertext = hex::decode(&sealed.ciphertext_hex).map_err(|e| {
+        (
+            axum::http::StatusCode::BAD_REQUEST,
+            format!("invalid ciphertext_hex: {e}"),
+        )
+    })?;
+
+    // Decrypt the data key using IBE
+    let data_key = ibe::decrypt(
+        &nonce,
+        &encrypted_data_key,
+        &aggregated.user_secret_key,
+        sealed.key_id.as_bytes(),
+        &poc_ibe_info(),
+    );
+
+    // Decrypt the payload using AES-GCM
+    let plaintext = Aes256Gcm::decrypt(&ciphertext, sealed.key_id.as_bytes(), &data_key).map_err(|e| {
+        (
+            axum::http::StatusCode::BAD_REQUEST,
+            format!("failed to decrypt payload: {e}"),
+        )
+    })?;
+
+    // Return plaintext as UTF-8 string (or base64 if binary)
+    let plaintext_str = String::from_utf8(plaintext.clone()).unwrap_or_else(|_| {
+        use base64::{engine::general_purpose::STANDARD, Engine};
+        format!("base64:{}", STANDARD.encode(&plaintext))
+    });
+
+    info!(
+        "Decrypted {} bytes for key_id={} using {} shares",
+        plaintext.len(),
+        sealed.key_id,
+        aggregated.shares
+    );
+
+    Ok(Json(DecryptResponse {
+        plaintext: plaintext_str,
+    }))
+}
+
+async fn handle_encrypt(
+    State(state): State<Arc<AppState>>,
+    Json(request): Json<EncryptRequest>,
+) -> Result<Json<EncryptResponse>, (axum::http::StatusCode, String)> {
+    // Get public config for master public key and threshold
+    let public_config = state.public_config.as_ref().ok_or_else(|| {
+        (
+            axum::http::StatusCode::SERVICE_UNAVAILABLE,
+            "Server not configured with public config; cannot perform encryption".to_string(),
+        )
+    })?;
+
+    let master_public_key = decode_g2(&public_config.master_public_key_hex).map_err(|e| {
+        (
+            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Invalid master public key in config: {e}"),
+        )
+    })?;
+
+    // Generate random data key
+    let mut data_key = [0u8; KEY_SIZE];
+    thread_rng().fill_bytes(&mut data_key);
+
+    // Generate random scalar for IBE
+    let randomness = Scalar::rand(&mut thread_rng());
+
+    // Encrypt the data key using IBE
+    let (nonce, encrypted_keys) = ibe::encrypt_batched_deterministic(
+        &randomness,
+        &[data_key],
+        &[master_public_key],
+        request.key_id.as_bytes(),
+        &[poc_ibe_info()],
+    )
+    .map_err(|e| {
+        (
+            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+            format!("IBE encryption failed: {e:?}"),
+        )
+    })?;
+
+    let encrypted_data_key = encrypted_keys.into_iter().next().ok_or_else(|| {
+        (
+            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+            "IBE encryption produced no encrypted data key".to_string(),
+        )
+    })?;
+
+    // Encrypt plaintext with AES-256-GCM
+    let ciphertext = Aes256Gcm::encrypt(
+        request.plaintext.as_bytes(),
+        request.key_id.as_bytes(),
+        &data_key,
+    );
+
+    let sealed = SealedFile {
+        version: 1,
+        key_id: request.key_id.clone(),
+        threshold: public_config.threshold,
+        master_public_key_hex: public_config.master_public_key_hex.clone(),
+        nonce_hex: encode_g2(&nonce),
+        encrypted_data_key_hex: hex::encode(encrypted_data_key),
+        ciphertext_hex: hex::encode(ciphertext),
+    };
+
+    info!(
+        "Encrypted {} bytes for key_id={}",
+        request.plaintext.len(),
+        request.key_id
+    );
+
+    Ok(Json(EncryptResponse { sealed }))
 }
 
 async fn request_key(key_id: String, servers: Vec<String>, threshold: Option<u16>) -> Result<()> {
