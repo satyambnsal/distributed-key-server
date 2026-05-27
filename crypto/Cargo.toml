@@ -1,0 +1,22 @@
+[package]
+name = "crypto"
+version = "0.6.7"
+authors = ["Mysten Labs <build@mystenlabs.com>"]
+edition = "2024"
+license = "Apache-2.0"
+
+[dependencies]
+fastcrypto = { git = "https://github.com/MystenLabs/fastcrypto", rev = "5f87e04bb21d295ef6b39375a06615d45cbb906c", features = ["aes"] }
+fastcrypto-tbls = { git = "https://github.com/MystenLabs/fastcrypto", rev = "5f87e04bb21d295ef6b39375a06615d45cbb906c" }
+rand = "0.8.5"
+serde = "1.0.210"
+hex = "0.4"
+bcs = "0.1.6"
+itertools = "0.14.0"
+serde_with = "3.13.0"
+sui-sdk-types = { git = "https://github.com/MystenLabs/sui-rust-sdk.git", rev = "e494a36a76a0aab8c5d66d5557995faee5c1fb09", package = "sui-sdk-types", features = ["serde"] }
+
+typenum = "1.18.0"
+
+[dev-dependencies]
+sui_types = { git = "https://github.com/mystenlabs/sui", rev = "a3cc4467c9de48410a01fc2b6f3c1bff48780e5f", package = "sui-types" }
