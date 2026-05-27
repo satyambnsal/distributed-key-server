@@ -141,7 +141,7 @@ async function aesGcmEncrypt(
       additionalData: new Uint8Array(aad),
     },
     cryptoKey,
-    plaintext
+    new Uint8Array(plaintext)
   )
 
   return new Uint8Array(ciphertext)
