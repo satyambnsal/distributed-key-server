@@ -13,17 +13,10 @@ const BRAND_COLOR = '#E85D4C' // signature-coral
 const TEXT_GRAY = '#5F5C5C'
 const BG_GRAY = '#F5F5F5'
 
-interface EncryptedPayload {
-  ciphertext: string
-  nonce: string
-  key_id: string
-  encapsulation: string
-}
-
 export async function sendEncryptedDataEmail(
   toEmail: string,
   senderEmail: string,
-  encryptedPayload: EncryptedPayload
+  encryptedPayload: Record<string, unknown>
 ) {
   const decryptUrl = `${APP_URL}?tab=decrypt`
   const payloadJson = JSON.stringify(encryptedPayload, null, 2)

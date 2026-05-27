@@ -7,12 +7,7 @@ interface EncryptFormProps {
   user: User
 }
 
-interface SealedData {
-  ciphertext: string
-  nonce: string
-  key_id: string
-  encapsulation: string
-}
+type SealedData = Record<string, unknown>
 
 export function EncryptForm({ user }: EncryptFormProps) {
   const [recipientEmail, setRecipientEmail] = useState('')

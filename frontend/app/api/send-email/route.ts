@@ -25,15 +25,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
     }
 
-    // Validate encrypted payload structure
-    if (
-      !encryptedPayload.ciphertext ||
-      !encryptedPayload.nonce ||
-      !encryptedPayload.key_id ||
-      !encryptedPayload.encapsulation
-    ) {
+    // Validate encrypted payload is an object with content
+    if (typeof encryptedPayload !== 'object' || Object.keys(encryptedPayload).length === 0) {
       return NextResponse.json(
-        { error: 'Invalid encrypted payload structure' },
+        { error: 'Invalid encrypted payload' },
         { status: 400 }
       )
     }
