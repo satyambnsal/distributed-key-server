@@ -12,6 +12,68 @@ The POC is intentionally static:
 
 This is not production DKG. The generator creates all server shares locally for demo purposes.
 
+## Secure Key Distribution for Production
+
+In production, the `master_share_hex` values must be distributed securely to each server. The demo `generate-configs` command creates all shares on a single machine, which is acceptable for testing but violates the security model in production.
+
+### Split Ceremony with Operator-Generated Contributions
+
+Each server operator contributes randomness, so no single party ever sees the complete master secret:
+
+1. **Each operator generates their contribution:**
+   ```bash
+   # Operator 0 runs:
+   cargo run -- generate-contribution --party-id 0 --threshold 2 --parties 3
+   # Outputs: contribution-0.json (contains encrypted commitment)
+
+   # Operator 1 runs:
+   cargo run -- generate-contribution --party-id 1 --threshold 2 --parties 3
+   # Outputs: contribution-1.json
+
+   # Operator 2 runs:
+   cargo run -- generate-contribution --party-id 2 --threshold 2 --parties 3
+   # Outputs: contribution-2.json
+   ```
+
+2. **Exchange contributions (public channel is OK):**
+   ```bash
+   # All operators share their contribution-X.json files
+   # These contain Feldman VSS commitments, not raw secrets
+   ```
+
+3. **Each operator computes their final share:**
+   ```bash
+   # Operator 0 runs:
+   cargo run -- combine-contributions \
+     --my-party-id 0 \
+     --contributions contribution-0.json,contribution-1.json,contribution-2.json
+   # Outputs: server-0.yaml (only contains their share)
+   ```
+
+4. **Verify consistency:**
+   ```bash
+   # Any party can verify all shares are consistent without seeing them:
+   cargo run -- verify-shares \
+     --contributions contribution-0.json,contribution-1.json,contribution-2.json
+   ```
+
+> **Note:** The `generate-contribution`, `combine-contributions`, and `verify-shares` commands are not yet implemented.
+
+### Share Verification After Distribution
+
+After distributing shares, verify consistency without revealing them:
+
+```bash
+# Each server exposes its partial public key at /service
+curl http://server-0:3021/service | jq .partial_public_key
+curl http://server-1:3022/service | jq .partial_public_key
+curl http://server-2:3023/service | jq .partial_public_key
+
+# Verify that partial public keys are consistent with master public key
+cargo run -- verify-deployment --public-config configs/public.yaml \
+  --servers http://server-0:3021,http://server-1:3022,http://server-2:3023
+```
+
 ## Model
 
 Each server holds one share of the IBE master secret. For a `key_id`, a server derives:
